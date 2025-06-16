@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      // create a new AudioContext and connect the audio element
+      // only create AudioContext, MediaElementSource, and AnalyserNode once
       try {
         if (!audioCtx) {
           audioCtx = new AudioContext();
@@ -45,46 +45,74 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("AudioContext resumed");
           });
         }
+        if (!analyser) {
+          analyser = audioCtx.createAnalyser();
+          audioSource.connect(analyser);
+          analyser.connect(audioCtx.destination);
+          analyser.fftSize = 128; // lower value for chunkier bars
+        }
       } catch (error) {
         console.error("Error creating MediaElementSource:", error);
         return;
       }
 
-      // only create and connect analyser once
-      if (!analyser) {
-        analyser = audioCtx.createAnalyser();
-        audioSource.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        analyser.fftSize = 64; // lower value for chunkier bars
-      }
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
-      const barWidth = canvas.width / bufferLength;
-      let barHeight;
-      let x = 0;
+      const barWidth = canvas.width / 2 / bufferLength;
 
       // animate frequency bars
       function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        analyser.getByteFrequencyData(dataArray);
-        x = 0;
-        for (let i = 0; i < bufferLength; i++) {
-          barHeight = dataArray[i];
-          const r = (i * barHeight) / 20;
-          const g = i * 4;
-          const b = barHeight / 2;
-          ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
-          ctx.fillRect(
-            x,
-            canvas.height - barHeight / 2,
-            barWidth,
-            barHeight / 2
-          );
-          x += barWidth + 1; // add a small gap between bars
-        }
+        barAnimation(ctx, canvas, analyser, dataArray, bufferLength, barWidth);
+        // TODO : other animations can be added here which users can change thru radio buttons?
         requestAnimationFrame(animate);
       }
       animate();
     });
+  }
+
+  function barAnimation(
+    ctx,
+    canvas,
+    analyser,
+    dataArray,
+    bufferLength,
+    barWidth
+  ) {
+    // render a symmetrical audio frequency bar visualization from the center outwards
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    analyser.getByteFrequencyData(dataArray);
+    const centerX = canvas.width / 2;
+    const gap = 1;
+    let barHeight;
+
+    // Left bars: mirror frequency data from center to left
+    for (let i = 0; i < bufferLength; i++) {
+      barHeight = dataArray[i];
+      const r = i * (barHeight / 20);
+      const g = i * 4;
+      const b = barHeight / 2;
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.fillRect(
+        centerX - (i + 1) * (barWidth + gap),
+        canvas.height - barHeight / 2,
+        barWidth,
+        barHeight / 2
+      );
+    }
+
+    // Right bars: mirror frequency data from center to right
+    for (let i = 0; i < bufferLength; i++) {
+      barHeight = dataArray[i];
+      const r = i * (barHeight / 20);
+      const g = i * 4;
+      const b = barHeight / 2;
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.fillRect(
+        centerX + i * (barWidth + gap),
+        canvas.height - barHeight / 2,
+        barWidth,
+        barHeight / 2
+      );
+    }
   }
 });
