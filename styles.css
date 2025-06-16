@@ -1,0 +1,96 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+  font-family: "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 400px;
+  margin: 60px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 32px 24px 24px 24px;
+  text-align: center;
+}
+
+h1 {
+  color: #4f46e5;
+  margin-bottom: 24px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+input[type="file"] {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+}
+
+input[type="submit"],
+button {
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+input[type="submit"]:hover,
+button:hover {
+  background: #3730a3;
+}
+
+audio {
+  margin-top: 24px;
+  width: 100%;
+}
+
+#fileLabel {
+  display: block;
+  margin: 8px 0 16px 0;
+  color: #555;
+}
+
+.hide {
+  display: none !important;
+}
+
+#playBtn {
+  background-color: red;
+}
+
+#canvas1 {
+  display: block;
+  width: 100%;
+  height: 300px;
+  /* Remove absolute positioning so it stays inside #vContainer */
+  position: static;
+  margin: 0 auto;
+  background-color: black;
+}
+
+#vContainer {
+  max-width: 400px;
+  margin: 60px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 32px 24px 24px 24px;
+  text-align: center;
+}
